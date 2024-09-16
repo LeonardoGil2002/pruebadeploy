@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  # Imagen de la aplicación
+  bazar:
+    build: BazarAPI
+    mem_limit: 512m
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:mysql://api_bazar:3306/bazarapi?createDatabaseIfNotExist=true&serverTimezone=UTC
+      DB_USER: root
+      DB_PASSWORD: root
+    depends_on:
+      - api_bazar
+
+  # Imagen de la base de datos
+  api_bazar:
+    image: mysql:8.0.33
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: bazarapi
