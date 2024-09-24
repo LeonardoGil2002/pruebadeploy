@@ -1,25 +1,35 @@
 version: '3'
 
 services:
-  # Imagen de la aplicación
   bazar:
+    container_name: "backcontainer"
     build: BazarAPI
-    mem_limit: 512m
     ports:
       - "8080:8080"
     environment:
-      DB_URL: jdbc:mysql://api_bazar:3306/bazarapi?createDatabaseIfNotExist=true&serverTimezone=UTC
-      DB_USER: root
+      DB_URL: jdbc:mysql://api_bazar:3306/bazarapi
+      DB_USER_NAME: root
       DB_PASSWORD: root
     depends_on:
-      - api_bazar
+      api_bazar:
+        condition: service_healthy
 
-  # Imagen de la base de datos
   api_bazar:
+    container_name: "mysqldb"
     image: mysql:8.0.33
     ports:
       - "3307:3306"
+    volumes:
+    - mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_PASSWORD: root
       MYSQL_DATABASE: bazarapi
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+
+volumes:
+  mysql-data:
+    external: false
